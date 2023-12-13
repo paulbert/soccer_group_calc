@@ -1,3 +1,4 @@
+import { formatStandings } from "./formatStandings";
 import { sortResults, ResultRow } from "./sortResults";
 
 // const sampleResults: ResultRow[] = [
@@ -18,4 +19,6 @@ const sampleResults: ResultRow[] = [
   ["Sweden", 0, "Belgium", 1],
 ];
 
-console.log(sortResults(sampleResults));
+const sortedResults = sortResults(sampleResults);
+
+console.log(formatStandings(sortedResults.flat()));

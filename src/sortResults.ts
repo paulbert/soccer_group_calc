@@ -10,7 +10,7 @@ type Standing = {
   points: number;
 };
 
-type Standings = Standing[];
+export type Standings = Standing[];
 
 type SortFunction = (a: Standing, b: Standing) => number;
 
