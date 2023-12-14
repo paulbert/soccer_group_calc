@@ -109,8 +109,8 @@ const sortStandings = (standingChunks, results, sortInstructions, sortIndex = 0)
     }
     return rechunkedStandings;
 };
-function sortResults(results) {
+function sortResults(results, useEuroTiebreakers) {
     const unsortedStandings = calculateStandings(results);
-    return sortStandings([unsortedStandings], results, euroSortInstructions);
+    return sortStandings([unsortedStandings], results, useEuroTiebreakers ? euroSortInstructions : worldCupSortInstructions);
 }
 exports.sortResults = sortResults;

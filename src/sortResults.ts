@@ -181,7 +181,11 @@ const sortStandings = (
   return rechunkedStandings;
 };
 
-export function sortResults(results: ResultRow[]) {
+export function sortResults(results: ResultRow[], useEuroTiebreakers: boolean) {
   const unsortedStandings = calculateStandings(results);
-  return sortStandings([unsortedStandings], results, euroSortInstructions);
+  return sortStandings(
+    [unsortedStandings],
+    results,
+    useEuroTiebreakers ? euroSortInstructions : worldCupSortInstructions
+  );
 }
