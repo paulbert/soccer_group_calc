@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortResults = void 0;
 const emptyStanding = (team) => {
     return {
         team,
@@ -108,8 +105,7 @@ const sortStandings = (standingChunks, results, sortInstructions, sortIndex = 0)
     }
     return rechunkedStandings;
 };
-function sortResults(results, useEuroTiebreakers) {
+export function sortResults(results, useEuroTiebreakers) {
     const unsortedStandings = calculateStandings(results);
     return sortStandings([unsortedStandings], results, useEuroTiebreakers ? euroSortInstructions : worldCupSortInstructions);
 }
-exports.sortResults = sortResults;

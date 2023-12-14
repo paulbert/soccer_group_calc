@@ -1,9 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const ts_command_line_args_1 = require("ts-command-line-args");
-const formatStandings_1 = require("./formatStandings");
-const sortResults_1 = require("./sortResults");
-const args = (0, ts_command_line_args_1.parse)({
+import { parse } from "ts-command-line-args";
+import { promises as fs } from "fs";
+import { parse as csvParse } from "csv-parse/sync";
+import { formatStandings } from "./formatStandings.js";
+import { sortResults } from "./sortResults.js";
+const args = parse({
     source: {
         type: String,
         alias: "s",
@@ -53,11 +53,44 @@ const sampleResults = [
         ["Saudi Arabia", 1, "Mexico", 2],
     ],
 ];
-const parseResultsFile = (src) => {
-    return sampleResults[0];
+const formatError = (additionalMessage) => {
+    throw new Error(`Results should be in format of:\n\nTeam 1 | Team 1 Score | Team 2 | Team 2 Score\n\n${additionalMessage}`);
+};
+const validateScores = (scoreStrings) => {
+    return scoreStrings.map((scoreString) => {
+        const score = parseInt(scoreString);
+        if (isNaN(score)) {
+            formatError("Scores should be valid numbers");
+        }
+        if (score < 0) {
+            throw new Error("Team scores should not be negative numbers");
+        }
+        if (parseInt(scoreString) !== parseFloat(scoreString)) {
+            console.warn("Some scores provided were not whole numbers. Proceeding with rounded numbers...");
+        }
+        return score;
+    });
+};
+const parseResultsFile = async (src) => {
+    const rawResults = await fs.readFile(src);
+    return csvParse(rawResults).map((row) => {
+        if (row.length < 4) {
+            formatError("Fewer than four values for results");
+        }
+        const [team1, team1GoalsString, team2, team2GoalsString, ...rest] = row;
+        if (rest.length > 0) {
+            console.warn("More than four columns in result input row. Ignoring columns beyond four...");
+        }
+        const [team1Goals, team2Goals] = validateScores([
+            team1GoalsString,
+            team2GoalsString,
+        ]);
+        return [team1, team1Goals, team2, team2Goals];
+    });
 };
 const results = source
-    ? parseResultsFile(source)
+    ? await parseResultsFile(source)
     : sampleResults[sampleIndex || 0];
-const sortedResults = (0, sortResults_1.sortResults)(results, useEuroTiebreakers);
-console.log((0, formatStandings_1.formatStandings)(sortedResults.flat()));
+console.log();
+const sortedResults = sortResults(results, useEuroTiebreakers);
+console.log(formatStandings(sortedResults.flat()));

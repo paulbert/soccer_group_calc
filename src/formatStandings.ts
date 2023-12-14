@@ -1,4 +1,4 @@
-import { Standings } from "./sortResults";
+import { Standings } from "./sortResults.js";
 
 const reduceToTableRow = (h: string, heading: string, index: number) => {
   const spaces = index === 0 ? 25 : 5;

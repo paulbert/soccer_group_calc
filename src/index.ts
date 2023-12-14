@@ -1,7 +1,9 @@
 import { parse } from "ts-command-line-args";
+import { promises as fs } from "fs";
+import { parse as csvParse } from "csv-parse/sync";
 
-import { formatStandings } from "./formatStandings";
-import { sortResults, ResultRow } from "./sortResults";
+import { formatStandings } from "./formatStandings.js";
+import { sortResults, ResultRow } from "./sortResults.js";
 
 interface SoccerGroupCalcArguments {
   source?: string;
@@ -70,13 +72,55 @@ const sampleResults: ResultRow[][] = [
   ],
 ];
 
-const parseResultsFile = (src: string) => {
-  return sampleResults[0];
+const formatError = (additionalMessage: string) => {
+  throw new Error(
+    `Results should be in format of:\n\nTeam 1 | Team 1 Score | Team 2 | Team 2 Score\n\n${additionalMessage}`
+  );
 };
 
-const results = source
-  ? parseResultsFile(source)
+const validateScores = (scoreStrings: string[]) => {
+  return scoreStrings.map((scoreString) => {
+    const score = parseInt(scoreString);
+    if (isNaN(score)) {
+      formatError("Scores should be valid numbers");
+    }
+    if (score < 0) {
+      throw new Error("Team scores should not be negative numbers");
+    }
+    if (parseInt(scoreString) !== parseFloat(scoreString)) {
+      console.warn(
+        "Some scores provided were not whole numbers. Proceeding with rounded numbers..."
+      );
+    }
+    return score;
+  });
+};
+
+const parseResultsFile = async (src: string) => {
+  const rawResults = await fs.readFile(src);
+  return csvParse(rawResults).map((row: string[]) => {
+    if (row.length < 4) {
+      formatError("Fewer than four values for results");
+    }
+    const [team1, team1GoalsString, team2, team2GoalsString, ...rest] = row;
+    if (rest.length > 0) {
+      console.warn(
+        "More than four columns in result input row. Ignoring columns beyond four..."
+      );
+    }
+    const [team1Goals, team2Goals] = validateScores([
+      team1GoalsString,
+      team2GoalsString,
+    ]);
+    return [team1, team1Goals, team2, team2Goals];
+  });
+};
+
+const results: ResultRow[] = source
+  ? await parseResultsFile(source)
   : sampleResults[sampleIndex || 0];
+
+console.log();
 
 const sortedResults = sortResults(results, useEuroTiebreakers);
 
