@@ -91,7 +91,6 @@ const rechunkStandings = (sortFunction, fullStandings) => (newStandingChunk, sta
     ];
 };
 const sortStandings = (standingChunks, results, sortInstructions, sortIndex = 0) => {
-    console.log(sortIndex);
     const { sort: sortFunction, useAll } = sortInstructions[sortIndex];
     const rechunkedStandings = standingChunks
         .map((standings) => {

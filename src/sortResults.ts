@@ -153,7 +153,6 @@ const sortStandings = (
   }[],
   sortIndex = 0
 ): Standings[] => {
-  console.log(sortIndex);
   const { sort: sortFunction, useAll } = sortInstructions[sortIndex];
   const rechunkedStandings = standingChunks
     .map((standings) => {
