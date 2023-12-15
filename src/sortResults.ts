@@ -170,12 +170,14 @@ const sortStandings = (
     })
     .flat();
   if (rechunkedStandings.some((standings) => standings.length > 1)) {
-    return sortStandings(
-      rechunkedStandings,
-      results,
-      sortInstructions,
-      sortIndex + 1
-    );
+    return sortInstructions[sortIndex + 1] === undefined
+      ? rechunkedStandings
+      : sortStandings(
+          rechunkedStandings,
+          results,
+          sortInstructions,
+          sortIndex + 1
+        );
   }
   return rechunkedStandings;
 };
