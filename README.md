@@ -21,6 +21,11 @@ There is a different set of tiebreakers used for World Cup and Euro tournaments.
 - `--sampleIndex` or `-i` _(optional)_: Either 0 or 1 to denote one of two sample set of match results to run script with. Optional, but script will fail if neither source or sampleIndex are supplied.
 - `--useEuroTiebreakers`or `-u` _(optional)_: Run with this flag to use the Euro tiebreaking rules instead of World Cup.
 
+## Notes
+
+- These tournaments are usually organized into 4 team groups where the teams play each other once. The program is not limited to that, it'll take any number of games, run the calculations, and spit out the results.
+- The Euro tiebreakers are not quite strictly followed. If there are three or more teams tied on points and steps 1 to 3 leads to breaking the tie for one or more but not all of those teams, the rules state steps 1 to 3 should be repeated for the remaining teams. This program just goes through step by step to keep it from getting too complicated and difficult to follow.
+
 ## Reference
 
 - [World Cup tiebreaking rules](https://en.wikipedia.org/wiki/2022_FIFA_World_Cup#Tiebreakers)
